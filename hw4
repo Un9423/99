@@ -1,0 +1,113 @@
+#include <stdio.h>
+
+int move(int chess[8][8], int i, int j, int dx, int dy, int color) {
+    if (i < 0 || i >= 8 || j < 0 || j >= 8) {
+        return 2;
+    }
+
+    int new_i = i + dx;
+    int new_j = j + dy;
+    int a=1;
+    if (new_i >= 0 && new_i < 8 && new_j >= 0 && new_j < 8 
+      && chess[new_i][new_j] != color 
+      && chess[new_i][new_j] != 0) {
+        while (new_i >= 0 && new_i < 8 
+                && new_j >= 0 && new_j < 8) {
+            new_i += dx;
+            new_j += dy;
+            a++;
+            if (chess[new_i][new_j] == 0) {
+                  return a;
+                  a=0;
+            }
+            if (chess[new_i][new_j] == color) {
+                  break;
+            }
+        }
+    }
+    else{
+      return 0;
+    }
+}
+
+void WhiteCanMoves(int chess[8][8]) {
+  printf("白子所有可以走的位子:\n");
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      if (chess[i][j] == 2) {
+        for (int dx = -1; dx <= 1; dx++) {
+          for (int dy = -1; dy <= 1; dy++) {
+            if (dx == 0 && dy == 0) {
+              continue;
+            }
+            int result = move(chess, i, j, dx, dy, 2);
+            if (result > 0) {
+              printf("(%d, %d)\n", i+result*dx, j+result*dy);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void BlackCanMoves(int chess[8][8]) {
+  printf("黑子所有可以走的位子:\n");
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      if (chess[i][j] == 1) {
+        for (int dx = -1; dx <= 1; dx++) {
+          for (int dy = -1; dy <= 1; dy++) {
+            if (dx == 0 && dy == 0) {
+              continue;
+            }
+            int result = move(chess, i, j, dx, dy, 1);
+            if (result > 0) {
+              printf("(%d, %d)\n", i+result*dx, j+result*dy);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+int main() {
+    int chess[8][8] = {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 2, 1, 1, 1, 0},
+        {0, 0, 0, 1, 2, 0, 0, 0},
+        {0, 0, 0, 1, 0, 0, 0, 0},
+        {0, 0, 0, 1, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}
+    };
+
+    int i, j, dx, dy, color;
+
+    printf("座標 (i,j): ");
+    scanf("%d %d", &i, &j);
+    printf("方向 (dx,dy): ");
+    scanf("%d %d", &dx, &dy);
+    printf("棋子顏色: ");
+    scanf("%d", &color);
+
+    int result = move(chess, i, j, dx, dy, color);
+                  
+    if (result > 0) {
+        printf("方向(%d, %d) 可以下子。\n", dx, dy);
+        printf("距離(%d,%d) %d步。\n", i,j,result);
+    } else if(result == 0) {
+        printf("方向(%d, %d) 不能下子。\n", dx, dy);
+    } else if(result == 2) {
+        printf("(%d, %d) 超出棋盤, 不能下子。\n", i, j);
+    } 
+
+    printf("-------------\n");
+  
+    WhiteCanMoves(chess);
+    BlackCanMoves(chess);
+  
+    return 0;
+}
