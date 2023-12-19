@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <ctype.h>
+
+int can_go(char maze[100][100], int n, int x, int y, int end_x, int end_y) {
+    if (x == end_x && y == end_y) {
+        maze[x][y] = 'x';
+        return 1;
+    }
+
+    maze[x][y] = 'x';
+
+    int go[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+    int path_found = 0;
+
+    for (int c = 0; c < 4; c++) {
+        int next_x = x + go[c][0];
+        int next_y = y + go[c][1];
+
+        if (next_x >= 0 && next_x < n && next_y >= 0 && next_y < n && maze[next_x][next_y] == '0') {
+            path_found = can_go(maze, n, next_x, next_y, end_x, end_y);
+            if (path_found) {
+                maze[x][y] = 'x';
+                return 1;
+            }
+            maze[next_x][next_y] = '0';
+        }
+    }
+
+    return path_found;
+}
+
+int main() {
+  int n, s_x, s_y, e_x, e_y;
+  char i;
+  printf("迷宮大小:");
+  scanf("%d", &n);
+  printf("起始點:");
+  scanf("%d %d", &s_x, &s_y);
+  printf("終點:");
+  scanf("%d %d", &e_x, &e_y);
+
+  char maze[100][100];
+
+  for (int a = 0; a < n; a++) {
+      for (int b = 0; b < n; b++) {
+          maze[a][b] = '0';
+      }
+  }
+
+  for (int a = 0; a < n; a++) {
+      for (int b = 0; b < n; b++) {
+          scanf(" %c", &i);
+          if (isdigit(i)) {
+              maze[a][b] = i;
+          }
+      }
+  }
+
+  if (!can_go(maze, n, s_x, s_y, e_x, e_y)) {
+    printf("迷宮沒有出口\n");
+  } 
+  else {
+    printf("迷宮入口到出口的路徑:\n");
+    for (int c = 0; c < n; c++) {
+        for (int d = 0; d < n; d++) {
+            printf("%c ", maze[c][d]);
+        }
+        printf("\n");
+    }
+  }
+
+  return 0;
+  
+}
