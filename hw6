@@ -1,0 +1,184 @@
+#include <stdio.h>
+
+int move(int chess[8][8], int i, int j, int dx, int dy, int color) {
+    if (i < 0 || i >= 8 || j < 0 || j >= 8) {
+        return 2;
+    }
+
+    int new_i = i + dx;
+    int new_j = j + dy;
+    int a=1;
+    if (new_i >= 0 && new_i < 8 && new_j >= 0 && new_j < 8 
+      && chess[new_i][new_j] != color 
+      && chess[new_i][new_j] != 0) {
+        while (new_i >= 0 && new_i < 8 
+                && new_j >= 0 && new_j < 8) {
+            new_i += dx;
+            new_j += dy;
+            a++;
+            if (chess[new_i][new_j] == 0) {
+                  return a;
+            }
+            if (chess[new_i][new_j] == color) {
+                  return 0;
+            }
+        }
+    }
+    else{
+      return 0;
+    }
+}
+
+int turn(int chess[8][8], int i, int j, int color){
+    int walk_i,walk_j,can_i,can_j;
+    for (int di = -1; di <= 1; di++) {
+      for (int dj = -1; dj <= 1; dj++) {
+        int now_i=i,now_j=j;
+        if (di == 0 && dj == 0) {
+          continue;
+        }
+        walk_i=i+di;
+        walk_j=j+dj;
+        chess[i][j]=color;
+        while(1){
+            if (chess[walk_i][walk_j] != color && chess[walk_i][walk_j] != 0) {
+                walk_i += di;
+                walk_j += dj;
+                if(chess[walk_i][walk_j] == color){
+                  can_i=walk_i;
+                  can_j=walk_j;
+                  while(1){
+                    if(now_i==can_i&&now_j==can_j){
+                      break;
+                    }
+                    now_i+=di;
+                    now_j+=dj;
+                    chess[now_i][now_j]=color;
+                  }
+                }
+            }
+            else{
+                break;
+            }
+        }
+      }
+    }
+}
+
+void now_chess(int chess[8][8]){
+  printf("現在的棋盤:\n\n");
+  int a,b;
+  for(a=0;a<8;a++){
+    for(b=0;b<8;b++){
+      printf("%d",chess[a][b]);
+    }
+    printf("\n");
+  }
+  printf("\n");
+}
+
+void BlackCanMoves(int chess[8][8]) {
+  printf("黑子所有可以走的位子:\n");
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      if (chess[i][j] == 1) {
+        for (int dx = -1; dx <= 1; dx++) {
+          for (int dy = -1; dy <= 1; dy++) {
+            if (dx == 0 && dy == 0) {
+              continue;
+            }
+            int result = move(chess, i, j, dx, dy, 1);
+            if (result > 0) {
+              if(i+result*dx>=0 && j+result*dy>=0 && i+result*dx<8 && j+result*dy<8){
+                printf("(%d, %d)\n", i+result*dx, j+result*dy);
+                printf("可翻轉棋子數:%d\n",result-1);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  printf("\n");
+}
+
+
+int main() {
+    int chess[8][8] = {
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 2, 1, 0, 0, 0},
+        {0, 0, 0, 1, 2, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0}
+    };
+
+    int i,j,max=0,x,max_i,max_j,wh=0,bl=0;
+    int t[x];
+    for(int a=0;a<8;a++){
+      for(int b=0;b<8;b++){
+        if(chess[a][b]!=0){
+          continue;
+        }
+        else if(chess[a][b]==0){
+          now_chess(chess);
+          BlackCanMoves(chess);
+          printf("黑棋您想下子的位子 (i,j): ");
+          scanf("%d %d",&i,&j);
+          turn(chess,i,j,1);
+          now_chess(chess);
+          printf("\n\n");
+          for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+              if (chess[i][j] == 2) {
+                for (int dx = -1; dx <= 1; dx++) {
+                  for (int dy = -1; dy <= 1; dy++) {
+                    if (dx == 0 && dy == 0) {
+                      continue;
+                    }
+                    int result = move(chess, i, j, dx, dy, 2);
+                    if (result > max && i+result*dx>=0 && j+result*dy>=0 && i+result*dx<8 && j+result*dy<8) {
+                      max=result;
+                      max_i=i+result*dx;
+                      max_j=j+result*dy;
+                      continue;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          printf("白棋電腦下子的位子: (%d,%d) \n",max_i,max_j);
+          max=0;
+          turn(chess,max_i,max_j,2);
+          a=0;
+          b=0;
+          continue;
+        }
+      }
+    }
+    now_chess(chess);
+    for (int c = 0; c < 8; c++) {
+      for (int d = 0; d < 8; d++) {
+        if(chess[c][d]==1){
+          bl++;
+        }
+        if(chess[c][d]==2){
+          wh++;
+        }
+      }
+    }
+    printf("棋局結束\n");
+    if(bl>wh){
+      printf("玩家獲勝,比數黑:白 = %d:%d",bl,wh);
+    }
+    if(wh>bl){
+      printf("電腦獲勝,比數黑:白 = %d:%d",bl,wh);
+    }
+    if(wh==bl){
+      printf("平手");
+    }
+    return 0;
+}
